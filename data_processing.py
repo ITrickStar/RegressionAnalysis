@@ -3,8 +3,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# Очистка датасета из предыдущего отчета
-def clean_dataset(dataset):
+# Ввод данных
+def input_data(url):
+    if (url.find('.xlsx') > 0):
+        dataframe = pd.read_excel(url,
+                                  usecols=lambda x: 'Unnamed' not in x, skiprows=1)
+    if (url.find('.csv') > 0):
+        dataframe = pd.read_csv(url,
+                                usecols=lambda x: 'Unnamed' not in x)
+    return dataframe
+
+
+# Очистка dataset
+def clean_data(dataset):
     for i in range(dataset.columns.size):
         if (dataset[dataset.columns[i]].isnull().sum() and float(dataset[dataset.columns[i]].isnull().sum()) < dataset.shape[0]/90):
             dataset.dropna(subset=[dataset.columns[i]], inplace=True)
@@ -21,12 +32,16 @@ def clean_dataset(dataset):
     dataset['Детский сад\nм'].fillna(
         dataset['Детский сад\nм'].median(axis=0), inplace=True)
 
+    numdata = dataset.select_dtypes(include=["number"])
+    for i in range(numdata.columns.size):
+        dataset = dataset[
+            (dataset[numdata.columns[i]] >= dataset[numdata.columns[i]].quantile(0.005)) & (dataset[numdata.columns[i]] <= dataset[numdata.columns[i]].quantile(0.995))]
+
     return dataset
 
-# Преобразование DataFrame
 
-
-def procesing_data(dataset):
+# Преобразование dataset
+def reform_data(dataset):
     for i in dataset.select_dtypes(include=[object]):
         if (dataset[i].unique().size > 2):
             dataset[i] = dataset[i].astype('category')
@@ -47,9 +62,8 @@ def procesing_data(dataset):
 
     numerical_columns = ['Общая площадь,\nкв.м', 'Жилая площадь,\nкв.м', 'Площадь кухни,\nкв.м', 'Высота потолков, м', 'Год постройки', 'Этаж', 'Этажность', 'Количество комнат', 'Цена предложения,\nруб.',
                          'Удельная цена, руб./кв.м', 'Колич.  Просмотр.', 'Колич.  Просм. в день', 'Остановка\nм', 'Парк\nм', 'Центр\nкм', 'Станция метро\nм', 'Школа\nм', 'Детский сад\nм']
-    include_numerical_columns = ['Общая площадь,\nкв.м', 'Высота потолков, м', 'Этаж',
+    include_numerical_columns = ['Общая площадь,\nкв.м', 'Этаж',
                                  'Остановка\nм', 'Парк\nм', 'Центр\nкм', 'Станция метро\nм', 'Школа\nм', 'Детский сад\nм']
-    include_numerical_columns = ['Общая площадь,\nкв.м']
     numerical_columns = include_numerical_columns
     data_numerical = dataset[numerical_columns]
 
@@ -61,7 +75,7 @@ def procesing_data(dataset):
     data_categorical = pd.get_dummies(
         dataset[categorical_columns], drop_first=True)
 
-    data = pd.concat((data_numerical,
+    data = pd.concat((data_binary, data_numerical, data_categorical,
                      dataset['Удельная цена, руб./кв.м']), axis=1)
     return data
 

@@ -11,29 +11,26 @@ import data_processing
 import warnings
 warnings.filterwarnings("ignore")
 
-url = "https://raw.githubusercontent.com/ITrickStar/ML-practice/master/new_train.csv"
-if ('')
-df = pd.read_excel('данные_квартиры.xlsx',
-                   usecols=lambda x: 'Unnamed' not in x, skiprows=1)
-
-dataset = data_processing.clean_dataset(df)
-data = data_processing.procesing_data(dataset)
+url = 'https://raw.githubusercontent.com/ITrickStar/RegressionAnalysis/master/apartment_data.xlsx'
+# dataset_raw = pd.read_excel('данные_квартиры.xlsx',
+#                             usecols=lambda x: 'Unnamed' not in x, skiprows=1)
+df = data_processing.input_data(url)
+dataset = data_processing.clean_data(df)
+data = data_processing.reform_data(dataset)
 
 # Разбиение на тестовую и предсказываемую сборку
 X = data.drop('Удельная цена, руб./кв.м', axis=1)
 y = data['Удельная цена, руб./кв.м']
 
-
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=40)
 
 # Линейная регрессия
-degree = 1
 regressor = LinearRegression()
-regressor.fit(X_train, y_train)
 X = X_train
 y = y_train
 
+regressor.fit(X, y)
 coeff_linear = pd.DataFrame(
     regressor.coef_, X.columns, columns=['Coefficient'])
 
@@ -49,9 +46,10 @@ print('Adjusted R-squared:', 1 - (1-regressor.score(X, y))
 # print('Root Mean Squared Error:', np.sqrt(
 #     metrics.mean_squared_error(y_test, y_pred)))
 print(coeff_linear)
+print('\n')
 
 # Полиномиальная регрессия
-degree = 3
+degree = 2
 poly = PolynomialFeatures(degree)
 pf_train = poly.fit_transform(X_train)
 pf_test = poly.fit_transform(X_test)
@@ -76,12 +74,6 @@ print('Adjusted R-squared:', 1 - (1-pfregressor.score(X, y))
 #     metrics.mean_squared_error(y_test, pf_y_pred)))
 print(coeff_polynomial)
 
-f, ax = plt.subplots(figsize=(14, 7))
-sns.regplot(y=y_test, x=X_test, order=degree)
-plt.scatter(X_test, y_test, color="orange")
-plt.grid(True)
-plt.show()
-
 # SVC
 # svc = SVC(gamma='auto')
 # svc.fit(X_train, y_train)
@@ -90,3 +82,10 @@ plt.show()
 # err_test = np.mean(y_test != svc.predict(X_test))
 # print('Ошибка на обучающей выборке: ', err_train)
 # print('Ошибка на тестовой выборке: ', err_test)
+
+
+f, ax = plt.subplots(figsize=(14, 7))
+sns.regplot(y=y_test, x=X_test['Общая площадь,\nкв.м'], order=degree)
+plt.scatter(X_test['Общая площадь,\nкв.м'], y_test, color="orange")
+plt.grid(True)
+plt.show()
