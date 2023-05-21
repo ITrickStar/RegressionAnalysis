@@ -7,16 +7,16 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
-import data_processing
+import Regression.reg_data_processing as reg_data_processing
 import warnings
 warnings.filterwarnings("ignore")
 
 url = 'https://raw.githubusercontent.com/ITrickStar/RegressionAnalysis/master/apartment_data.xlsx'
 # dataset_raw = pd.read_excel('данные_квартиры.xlsx',
 #                             usecols=lambda x: 'Unnamed' not in x, skiprows=1)
-df = data_processing.input_data(url)
-dataset = data_processing.clean_data(df)
-data = data_processing.reform_data(dataset)
+df = reg_data_processing.input_data(url)
+dataset = reg_data_processing.clean_data(df)
+data = reg_data_processing.reform_data(dataset)
 
 # Разбиение на тестовую и предсказываемую сборку
 X = data.drop('Удельная цена, руб./кв.м', axis=1)
