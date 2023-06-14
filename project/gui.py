@@ -78,7 +78,7 @@ class App(ctk.CTk):
         """Frame2"""
         frame2 = tk.LabelFrame(
             self, text="Описательная статистика", height=300, width=400)
-        frame2.place(height=300, width=300, y=300)
+        frame2.place(height=250, width=300, y=350)
         self.tv2 = ttk.Treeview(frame2)
         # set the height and width of the widget to 100% of its container (frame1).
         self.tv2.place(relheight=1, relwidth=1)
@@ -99,15 +99,15 @@ class App(ctk.CTk):
         self.data_manipulation()
 
         """Notebook"""
-        notebook = ttk.Notebook(self, height=400, width=400)
-        notebook.place(height=400, width=400, x=600)
+        notebook = ttk.Notebook(self, height=200, width=800)
         print(self.df.head())
         notebook.add(
             sup.Tab(notebook, self.df.describe(include='bool')), text='binary')
         notebook.add(sup.Tab(notebook, self.df.describe(
             include='number')), text='numerical')
-        notebook.add(sup.Tab(notebook, self.df.describe(include='category')), text='category')
-        notebook.pack()
+        notebook.add(sup.Tab(notebook, self.df.describe(
+            include='category')), text='category')
+        notebook.place(x=300, y=350)
 
     def File_dialog(self):
         """This Function will open the file explorer and assign the chosen file path to label_file"""
@@ -117,8 +117,8 @@ class App(ctk.CTk):
         return None
 
     def Load_excel_data(self):
-        self.File_dialog()
-        #self.filename = 'D:\Apartment_data.xlsx'
+        # self.File_dialog()
+        self.filename = "D:\Works\LR\Input\Apartment_data_NN.xlsx"
         self.df = sup.Load_DataFrame(self.filename)
 
         new_header = self.df.iloc[0]  # grab the first row for the header
@@ -131,8 +131,8 @@ class App(ctk.CTk):
         #     self.df.rename(
         #         columns={self.df.columns[i]: self.df.columns[i].replace('\n', ' ')})
 
-        sup.TVinput(self.tv1, self.df.reset_index())
-        sup.TVinput(self.tv2, self.df.describe().reset_index())
+        sup.TVinput(self.tv1, self.df)
+        sup.TVinput(self.tv2, self.df.describe().round(2))
 
         return None
 

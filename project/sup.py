@@ -4,7 +4,7 @@ import pandas as pd
 import data_processing
 
 
-def TVinput(tv: ttk.Treeview, df: pd.DataFrame):
+def TVinput(tv: ttk.Treeview, df: pd.DataFrame):  # Dataframe in Treeview
     def clear_data():
         tv.delete(*tv.get_children())
         return None
@@ -24,29 +24,7 @@ def TVinput(tv: ttk.Treeview, df: pd.DataFrame):
     return None
 
 
-def Load_Excel(input: str):
-    """If the file selected is valid this will load the file into the Treeview"""
-    file_path = input
-    try:
-        excel_filename = r"{}".format(file_path)
-        if excel_filename[-4:] == ".csv":
-            df = pd.read_csv(excel_filename)
-        else:
-            df = pd.read_excel(
-                excel_filename)
-    except ValueError:
-        tk.messagebox.showerror(
-            "Information", "The file you have chosen is invalid")
-        return None
-    except FileNotFoundError:
-        tk.messagebox.showerror(
-            "Information", f"No such file as {file_path}")
-        return None
-
-    return df
-
-
-def Load_DataFrame(input: str):
+def Load_DataFrame(input: str):  # Dataframe path input
     """If the file selected is valid this will load the file into the Treeview"""
     file_path = input
     try:
@@ -67,7 +45,7 @@ def Load_DataFrame(input: str):
     return df
 
 
-class Tab(tk.Frame):
+class Tab(tk.Frame):  # Tab object for notebook
     def __init__(self, parent, df: pd.DataFrame):
         tk.Frame.__init__(self)
         shell_frame = tk.LabelFrame(
